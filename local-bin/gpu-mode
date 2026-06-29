@@ -1,0 +1,13 @@
+#!/bin/sh
+if [ -n "$KWIN_DRM_DEVICES" ]; then
+  echo "Desktop rendering on: NVIDIA  ($KWIN_DRM_DEVICES)"
+else
+  echo "Desktop rendering on: Intel (default / mobile mode)"
+fi
+echo
+echo "Connected displays:"
+for c in /sys/class/drm/card*-*/status; do
+  [ -e "$c" ] || continue
+  [ "$(cat "$c" 2>/dev/null)" = connected ] || continue
+  n=${c%/status}; echo "  ${n##*/}"
+done

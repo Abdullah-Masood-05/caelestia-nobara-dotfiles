@@ -1,0 +1,13 @@
+# ############# Themes #############
+export QT_QPA_PLATFORMTHEME='qt6ct'
+export QT_WAYLAND_DISABLE_WINDOWDECORATION='1'
+export QT_AUTO_SCREEN_SCALE_FACTOR='1'
+
+# ###### app2unit Integration ######
+export APP2UNIT_SLICES='a=app-graphical.slice b=background-graphical.slice s=session-graphical.slice'
+
+# ###### User-installed tool paths ######
+# cliphist (go install -> ~/go/bin) and wl-screenrec (cargo -> ~/.cargo/bin) are NOT on the
+# uwsm/Hyprland session PATH by default (the installer only added them to fish's universal path).
+# Without this, clipboard history and screen recording fail in the Hyprland session.
+export PATH="$HOME/.cargo/bin:$HOME/go/bin:$PATH"

@@ -1,0 +1,61 @@
+#!/bin/sh
+# Hyprland display-mode switcher.
+# Usage: display-mode external|laptop|extend|mirror
+# Safe: refuses to disable the laptop panel when no external display is
+# physically connected (prevents a black-screen lockout).
+LAPTOP=eDP-1
+EXT=HDMI-A-1
+LAPTOP_SCALE=1.25   # internal panel: clean 1536x864 logical
+EXT_SCALE=1         # external monitor scale
+
+ext_connected() {
+    # cardN numbers change between boots, so glob the connector by name.
+    for s in /sys/class/drm/card*-"$EXT"/status; do
+        [ -e "$s" ] || continue
+        [ "$(cat "$s" 2>/dev/null)" = connected ] && return 0
+    done
+    return 1
+}
+
+note() {
+    command -v notify-send >/dev/null 2>&1 && \
+        notify-send -i video-display "Display mode" "$1"
+    echo "$1"
+}
+
+case "$1" in
+    laptop)
+        hyprctl keyword monitor "$LAPTOP, preferred, 0x0, $LAPTOP_SCALE"
+        hyprctl keyword monitor "$EXT, disable"
+        note "Laptop only ($LAPTOP)"
+        ;;
+    external)
+        if ! ext_connected; then
+            note "External ($EXT) not connected — staying on laptop"; exit 1
+        fi
+        hyprctl keyword monitor "$EXT, preferred, 0x0, $EXT_SCALE"
+        hyprctl keyword monitor "$LAPTOP, disable"
+        note "External only ($EXT)"
+        ;;
+    extend)
+        hyprctl keyword monitor "$LAPTOP, preferred, 1920x0, $LAPTOP_SCALE"
+        if ext_connected; then
+            hyprctl keyword monitor "$EXT, preferred, 0x0, $EXT_SCALE"
+            note "Extend ($LAPTOP + $EXT)"
+        else
+            note "External ($EXT) not connected — laptop only"
+        fi
+        ;;
+    mirror)
+        if ! ext_connected; then
+            note "External ($EXT) not connected — cannot mirror"; exit 1
+        fi
+        hyprctl keyword monitor "$LAPTOP, preferred, 1920x0, $LAPTOP_SCALE"
+        hyprctl keyword monitor "$EXT, preferred, 0x0, $EXT_SCALE, mirror, $LAPTOP"
+        note "Mirror ($EXT = $LAPTOP)"
+        ;;
+    *)
+        echo "Usage: display-mode external|laptop|extend|mirror" >&2
+        exit 2
+        ;;
+esac

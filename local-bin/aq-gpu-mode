@@ -1,0 +1,36 @@
+#!/bin/sh
+# Report the REAL render GPU in a Hyprland/aquamarine session.
+# (gpu-mode reads KWIN_DRM_DEVICES, which is KDE/KWin only — useless under
+# Hyprland. Hyprland's equivalent is AQ_DRM_DEVICES.)
+aq=$AQ_DRM_DEVICES
+if [ -z "$aq" ]; then
+    # Fall back to the live Hyprland process environment if not in ours.
+    hp=$(pgrep -x Hyprland | head -1)
+    [ -n "$hp" ] && aq=$(tr '\0' '\n' < "/proc/$hp/environ" 2>/dev/null | sed -n 's/^AQ_DRM_DEVICES=//p')
+fi
+
+if [ -n "$aq" ]; then
+    primary=${aq%%:*}                       # first device in the list = primary
+    vendor=$(cat "/sys/class/drm/$(basename "$primary")/device/vendor" 2>/dev/null)
+    case "$vendor" in
+        0x10de) gpu="NVIDIA" ;;
+        0x8086) gpu="Intel" ;;
+        0x1002) gpu="AMD" ;;
+        *)      gpu="unknown ($vendor)" ;;
+    esac
+    echo "Desktop rendering on: $gpu   (AQ_DRM_DEVICES=$aq, primary=$primary)"
+else
+    echo "Desktop rendering on: Intel (default / no AQ_DRM_DEVICES — undocked/mobile mode)"
+fi
+
+echo
+echo "Active monitors:"
+hyprctl monitors 2>/dev/null | sed -n 's/^Monitor \([^ ]*\) .*/  \1/p'
+
+echo
+echo "Connected displays (physical):"
+for c in /sys/class/drm/card*-*/status; do
+    [ -e "$c" ] || continue
+    [ "$(cat "$c" 2>/dev/null)" = connected ] || continue
+    n=${c%/status}; echo "  ${n##*/}"
+done

@@ -1,0 +1,65 @@
+--- ~/.local/share/caelestia/install.fish.orig	2026-06-29 14:30:22.127833470 +0500
++++ ~/.local/share/caelestia/install.fish	2026-06-29 14:59:11.912314851 +0500
+@@ -141,8 +141,11 @@
+ end
+ 
+ function ensure_tools
++    # Nobara/Terra repos ship the hypr* libraries but NOT the 'hyprland' compositor binary.
++    # Enable the canonical Fedora Hyprland COPR for a version-coherent stack (hyprland + hyprutils/hyprlang/aquamarine/xdph/hyprpicker/hypridle).
++    sudo dnf copr enable $noconfirm solopasha/hyprland
+     # Base tools
+-    sudo dnf install $noconfirm git curl scdoc tar unzip libnotify swappy grim wl-clipboard pkgconf-pkg-config ffmpeg-free-devel libavutil-free libavutil-free-devel slurp wf-recorder glib2 fuzzel python3-build python3-installer hatch python3-hatch-vcs libdrm-devel freeglut-devel clang ddcutil brightnessctl cava NetworkManager lm_sensors fish aubio pipewire glibc qt6-qtdeclarative libgcc libqalculate hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk gdm bluez bluez-tools inotify-tools wireplumber trash-cli foot fastfetch btop jq socat adw-gtk3-theme papirus-icon-theme qt5ct qt6ct wayland-protocols-devel hyprland-protocols-devel hyprlang sdbus-cpp hyprwayland-scanner-devel ImageMagick pulseaudio-libs cargo go xdg-utils nodejs-npm cmake pkg-config pango cairo hyprutils libxkbcommon libjpeg-turbo --allowerasing
++    sudo dnf install $noconfirm git curl scdoc tar unzip libnotify swappy grim wl-clipboard pkgconf-pkg-config ffmpeg-free-devel libavutil-free libavutil-free-devel slurp wf-recorder glib2 fuzzel python3-build python3-installer hatch python3-hatch-vcs libdrm-devel freeglut-devel clang ddcutil brightnessctl cava NetworkManager lm_sensors fish aubio pipewire glibc qt6-qtdeclarative libgcc libqalculate hyprland xdg-desktop-portal-hyprland xdg-desktop-portal-gtk bluez bluez-tools inotify-tools wireplumber trash-cli foot fastfetch btop jq socat adw-gtk3-theme papirus-icon-theme qt5ct qt6ct wayland-protocols-devel hyprland-protocols-devel hyprlang hyprwayland-scanner-devel ImageMagick pulseaudio-libs cargo go xdg-utils nodejs-npm cmake pkg-config pango cairo hyprutils libxkbcommon libjpeg-turbo
+ end
+ 
+ function sass_install
+@@ -167,7 +170,7 @@
+ end
+ 
+ function material_symbols_install --description 'Install Google Material Symbols fonts for current user'
+-   mkdir -p ~/.local/share/fonts
++   mkdir -p ~/.local/share/fonts/MaterialYou
+ 
+    wget -O ~/.local/share/fonts/MaterialYou/MaterialSymbolsRounded.ttf "https://github.com/google/material-design-icons/raw/master/variablefont/MaterialSymbolsRounded%5BFILL,GRAD,opsz,wght%5D.ttf"
+    wget -O ~/.local/share/fonts/MaterialYou/MaterialSymbolsOutlined.ttf "https://github.com/google/material-design-icons/raw/master/variablefont/MaterialSymbolsOutlined%5BFILL,GRAD,opsz,wght%5D.ttf"
+@@ -259,7 +262,7 @@
+ end
+ 
+ function hyprptools_install
+-    sudo dnf copr enable aneagle/ags-3 $noconfirm
++    # Dropped 'aneagle/ags-3' COPR: hyprpicker & hypridle come coherently from solopasha/hyprland (enabled in ensure_tools)
+     sudo dnf install $noconfirm hyprpicker hypridle
+ end
+ 
+@@ -315,11 +318,11 @@
+     # rm -rf $workdir
+ end
+ 
+-ensure_update
++# ensure_update  # Guardrail U (Nobara): skip 'dnf upgrade'; system updated via 'nobara-sync cli'
+ log 'System up-to-date'
+ ensure_tools
+ log 'Installed dependencies packages'
+-ensure_rpmfusion
++# ensure_rpmfusion  # Guardrail R (Nobara): provides RPM Fusion-equivalent repos already; adding upstream causes conflicts
+ log 'RPM fusion installed'
+ ensure_flatpak
+ log 'flatpak activated'
+@@ -474,7 +477,7 @@
+ 
+     for arg in $argv
+         switch $arg
+-            case --prefix=*
++            case '--prefix=*'
+                 set prefix (string replace -r '^--prefix=' '' -- $arg)
+             case --prefix
+                 # next token is the value
+@@ -646,7 +649,7 @@
+ 
+ cli_install
+ log 'Caelestia CLI is Installed'
+-shell_install
++shell_install --install --prefix=/usr  # Bug 2 fix: install beat_detector to /usr/lib/caelestia/ instead of leaving it in a temp dir that gets deleted
+ log 'Caelestia SHELL is Installed'
+ 
+ # Cd into dir

@@ -1,0 +1,51 @@
+# ######## Toolkit backends ########
+export GDK_BACKEND='wayland,x11'
+export QT_QPA_PLATFORM='wayland;xcb'
+export SDL_VIDEODRIVER='wayland,x11'
+export CLUTTER_BACKEND='wayland'
+export ELECTRON_OZONE_PLATFORM_HINT='auto'
+
+# ####### XDG specifications #######
+export XDG_CURRENT_DESKTOP=Hyprland
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=Hyprland
+
+# ############# Others #############
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# ######## GPU routing (Hyprland / aquamarine) ########
+# Auto-select the render GPU at session start, mirroring the KDE gpu.sh logic
+# (which emits KWIN_DRM_DEVICES) but emitting AQ_DRM_DEVICES for aquamarine.
+#   Docked  (a monitor connected on the NVIDIA GPU): NVIDIA primary, Intel second.
+#   Undocked: export nothing -> stay on the Intel iGPU (battery-friendly default).
+# GPUs are identified live by PCI vendor ID, so cardN renumbering across reboots
+# is handled correctly (no hardcoded card numbers).
+_nvidia_card=
+_intel_card=
+for _card in /sys/class/drm/card[0-9]*; do
+    case "${_card##*/}" in *-*) continue ;; esac   # skip connectors (cardN-XXX)
+    [ -r "$_card/device/vendor" ] || continue
+    read -r _vendor < "$_card/device/vendor" || continue
+    case "$_vendor" in
+        0x10de) _nvidia_card="${_card##*/}" ;;   # NVIDIA dGPU
+        0x8086) _intel_card="${_card##*/}" ;;    # Intel iGPU
+    esac
+done
+
+_nvidia_connected=0
+if [ -n "$_nvidia_card" ]; then
+    for _status in /sys/class/drm/"$_nvidia_card"-*/status; do
+        [ -r "$_status" ] || continue
+        read -r _s < "$_status" || continue
+        [ "$_s" = "connected" ] && { _nvidia_connected=1; break; }
+    done
+fi
+
+if [ "$_nvidia_connected" = 1 ] && [ -n "$_nvidia_card" ] && [ -n "$_intel_card" ]; then
+    # Docked: NVIDIA primary, Intel listed second so the laptop panel stays usable
+    export AQ_DRM_DEVICES="/dev/dri/$_nvidia_card:/dev/dri/$_intel_card"
+    export AQ_FORCE_LINEAR_BLIT=0
+fi
+# Undocked: nothing exported -> Hyprland uses its default (Intel)
+
+unset _nvidia_card _intel_card _nvidia_connected _card _vendor _status _s

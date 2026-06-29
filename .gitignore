@@ -1,0 +1,42 @@
+# Safety net — never commit secrets, credentials, or device/identity data.
+# (The repo is a curated copy-out, so these mostly shouldn't appear; this is belt-and-suspenders.)
+
+# Credentials / keys / tokens
+*.nmconnection
+id_*
+*.pem
+*.key
+*_rsa
+*_ed25519
+*.token
+*.gpg
+.env
+.env.*
+.ssh/
+
+# Keyrings / wallets
+*.kwl
+*.keyring
+*.salt
+kwallet*/
+keyrings/
+
+# Browser profiles / data
+.config/brave*
+brave*
+.mozilla/
+.zen/
+
+# Claude working dir
+.claude/
+
+# Local backups / live-state snapshots
+*.bak
+*.bak-*
+*.orig
+*.swp
+*~
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
