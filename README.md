@@ -11,6 +11,9 @@ These are **my customizations only** — the GPU routing, per-monitor scaling, c
 > scripts, and a couple of small edits to that fork's files (clearly isolated under
 > [`caelestia-fork-changed-configs/`](caelestia-fork-changed-configs/) and credited below).
 
+> ⌨️ **[KEYBINDINGS.md](KEYBINDINGS.md)** — full keybinding cheat-sheet (every shortcut, grouped by
+> category, with my customizations marked ⭐).
+
 ## What's here
 
 ```
