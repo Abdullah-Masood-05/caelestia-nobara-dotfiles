@@ -18,10 +18,12 @@ config/                              # mirrors ~/.config/
   caelestia/hypr-user.conf           # the main override (sourced LAST by hyprland.conf, update-safe):
                                      #   - NVIDIA multi-GPU ghost-cursor fix (no_hardware_cursors=false)
                                      #   - per-monitor scale + position (eDP-1 @1.25, external-left)
-                                     #   - display-mode keybinds (Super+Alt+1..4) + move-window-to-monitor
+                                     #   - display-mode keybinds (Super+Shift+1..4) + move-window-to-monitor (Super+Alt+Left/Right)
+                                     #   - app shortcuts (Brave/Zed/OBS/Dolphin) + PWA/music special-workspace windowrules
   uwsm/env-hyprland                  # Hyprland session env + AQ_DRM_DEVICES GPU auto-routing block
   uwsm/env                           # shared session env (PATH fix for ~/.cargo/bin + ~/go/bin)
   plasma-workspace/env/gpu.sh        # KDE twin of the GPU auto-router (emits KWIN_DRM_DEVICES)
+  foot/foot.ini                      # terminal: Ctrl+C/V copy-paste (Ctrl+C still sends SIGINT when nothing selected)
 
 local-bin/                           # mirrors ~/.local/bin/  (put these on your PATH)
   display-mode                       # switch laptop / external / extend / mirror (hyprctl), black-screen-safe
