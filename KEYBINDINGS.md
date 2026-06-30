@@ -20,7 +20,8 @@ config after my customizations.
 |---|---|---|
 | `Super` (tap) | App launcher (fuzzel/caelestia) | |
 | `Super + T` | Terminal (`foot`) | |
-| `Super + B` | **Brave** (`--password-store=kwallet6`) | ⭐ *(was Firefox/Zen)* |
+| `Super + B` | **Brave** (`--new-window --password-store=kwallet6`) | ⭐ *(was Firefox/Zen)* |
+| `Super + Shift + B` | **New Brave window on current workspace** (`brave-new-window-here`) | ⭐ |
 | `Super + C` | **Zed** editor | ⭐ *(was codium)* |
 | `Super + O` | **OBS** | ⭐ |
 | `Super + Shift + D` | **Dolphin** file manager | ⭐ |
@@ -173,9 +174,12 @@ config after my customizations.
 |---|---|---|
 | `Ctrl + C` | Copy (when text selected) / SIGINT (when not) | ⭐ |
 | `Ctrl + V` | Paste | ⭐ |
+| `Ctrl + Q` | **Interrupt (SIGINT)** — explicit, always sends `^C` regardless of selection | ⭐ |
 | `Ctrl + Shift + C` / `Ctrl + Shift + V` | Copy / paste (also work) | |
 
-> In `~/.config/foot/foot.ini` `[key-bindings]`. **foot reads config only in new windows.**
+> In `~/.config/foot/foot.ini`: copy/paste in `[key-bindings]`, and `[text-bindings]` `\x03=Control+q`
+> remaps the raw interrupt byte to **Ctrl+Q** so Ctrl+C/V are free for copy/paste. **foot reads config
+> only in new windows.**
 
 ---
 

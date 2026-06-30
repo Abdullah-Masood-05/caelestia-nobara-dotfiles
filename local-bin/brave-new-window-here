@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+CURRENT_WS=$(hyprctl activeworkspace -j | jq -r ".id")
+BRAVE_ADDR=$(hyprctl clients -j | jq -r "[.[] | select(.class | test(\"brave\"; \"i\"))][0].address // empty")
+if [ -z "$BRAVE_ADDR" ]; then
+    exec brave-browser --new-window --password-store=kwallet6
+fi
+mapfile -t BEFORE < <(hyprctl clients -j | jq -r ".[] | select(.class | test(\"brave\"; \"i\")) | .address")
+hyprctl dispatch focuswindow "address:$BRAVE_ADDR"
+sleep 0.25
+wtype -M ctrl -k n -m ctrl
+sleep 0.6
+NEW_ADDR=""
+for a in $(hyprctl clients -j | jq -r ".[] | select(.class | test(\"brave\"; \"i\")) | .address"); do
+    found=0
+    for b in "${BEFORE[@]}"; do [ "$a" = "$b" ] && found=1 && break; done
+    [ "$found" -eq 0 ] && NEW_ADDR="$a" && break
+done
+if [ -n "$NEW_ADDR" ]; then
+    hyprctl dispatch movetoworkspace "$CURRENT_WS,address:$NEW_ADDR"
+    hyprctl dispatch focuswindow "address:$NEW_ADDR"
+fi

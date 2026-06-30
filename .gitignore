@@ -24,6 +24,8 @@ keyrings/
 # Browser profiles / data
 .config/brave*
 brave*
+# ...except this safe helper script (not browser data):
+!local-bin/brave-new-window-here
 .mozilla/
 .zen/
 

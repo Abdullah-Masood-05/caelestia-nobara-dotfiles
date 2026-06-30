@@ -26,12 +26,13 @@ config/                              # mirrors ~/.config/
   uwsm/env-hyprland                  # Hyprland session env + AQ_DRM_DEVICES GPU auto-routing block
   uwsm/env                           # shared session env (PATH fix for ~/.cargo/bin + ~/go/bin)
   plasma-workspace/env/gpu.sh        # KDE twin of the GPU auto-router (emits KWIN_DRM_DEVICES)
-  foot/foot.ini                      # terminal: Ctrl+C/V copy-paste (Ctrl+C still sends SIGINT when nothing selected)
+  foot/foot.ini                      # terminal: Ctrl+C/V copy-paste; interrupt remapped to Ctrl+Q ([text-bindings])
 
 local-bin/                           # mirrors ~/.local/bin/  (put these on your PATH)
   display-mode                       # switch laptop / external / extend / mirror (hyprctl), black-screen-safe
   aq-gpu-mode                        # report the REAL render GPU under Hyprland (reads AQ_DRM_DEVICES)
   gpu-mode                           # same idea for KDE (reads KWIN_DRM_DEVICES)
+  brave-new-window-here              # open a new Brave window on the CURRENT workspace (Super+Shift+B); needs wtype + jq
 
 caelestia-fork-changed-configs/      # small edits I made to EnceladusII/caelestia's OWN files (see credit)
   execs.conf                         # ~/.config/hypr/hyprland/execs.conf — night-light (gammastep) autostart disabled
